@@ -28,7 +28,7 @@ class _PageState extends State<_Page> {
   late List imageList;
   bool loading = true;
   fetchAllImage() async {
-    final response  = await http.get(Uri.parse("https://deneme.eserislamiilimlermedresesi.com/slider.json"));
+    final response  = await http.get(Uri.parse("https://raw.githubusercontent.com/AkYazilimDestek/dynamik_slider-flutter/b1b8de6f9755f855ea87bfac47ea3bbf920a6388/slider.json"));
     if (response.statusCode == 200) {
       setState(() {
           imageList = jsonDecode(response.body);
@@ -58,7 +58,7 @@ class _PageState extends State<_Page> {
                 width: 300.0,
                 child: Carousel(
                   images: imageList.map((element) {
-                    return Image.network(element["resim"].toString());
+                    return Image.network(element["image"].toString());
                   }).toList(),
                 )
             )
