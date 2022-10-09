@@ -1,26 +1,71 @@
+import 'dart:convert';
+
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'views/HomePage.dart';
-void main() => runApp(MyApp());
+import 'package:http/http.dart' as http;
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+void main() => runApp(App());
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      theme:ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      getPages: [
-        GetPage(name: "/home", page: () => HomePage()),
-      ],
-      home : HomePage()
+    return MaterialApp(
+      home : _Page(),
     );
   }
 }
+
+class _Page extends StatefulWidget {
+  const _Page({Key? key}) : super(key: key);
+
+  @override
+  State<_Page> createState() => _PageState();
+}
+
+class _PageState extends State<_Page> {
+  late List imageList;
+  bool loading = true;
+  fetchAllImage() async {
+    final response  = await http.get(Uri.parse("https://deneme.eserislamiilimlermedresesi.com/slider.json"));
+    if (response.statusCode == 200) {
+      setState(() {
+          imageList = jsonDecode(response.body);
+          loading = false;
+      });
+    }
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllImage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("flutter slider"),
+      ),
+      body : Center(
+        child : Column(
+          children: [
+            SizedBox(
+                height: 150.0,
+                width: 300.0,
+                child: Carousel(
+                  images: imageList.map((element) {
+                    return Image.network(element["resim"].toString());
+                  }).toList(),
+                )
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
